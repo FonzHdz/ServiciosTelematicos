@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  webapp:
+    image: fonzhdz24/webapp:latest
+    container_name: webapp
+    networks:
+      - appnet
+    expose:
+      - 5000
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=usuario
+      - DB_PASSWORD=clave123
+      - DB_NAME=webappdb
+    depends_on:
+      - mysql
+
+  apache:
+    image: fonzhdz24/apache:latest
+    container_name: apache-ssl
+    networks:
+      - appnet
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - webapp
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    networks:
+      - appnet
+    expose:
+      - 3306
+    environment:
+      - MYSQL_DATABASE=webappdb
+      - MYSQL_USER=usuario
+      - MYSQL_PASSWORD=clave123
+      - MYSQL_ROOT_PASSWORD=root123
+
+volumes:
+  mysql-data:
+
+networks:
+  appnet:
